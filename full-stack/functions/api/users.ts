@@ -9,10 +9,13 @@ export const onRequestGet: PagesFunction = async (context) => {
 
 	// loop and get users
 	const users = [];
+
+	const userRes = await fetch(`https://randomuser.me/api/?results=${maxUsers}`);
+	const user = await userRes.json<any>();
 	for(let i = 0; i < maxUsers; i++) {
-		const userRes = await fetch('https://randomuser.me/api/');
-		const user = await userRes.json<any>();
-		users.push(user.results[0]);
+		users.push(user.results[i]);
 	}
+
+
 	return Response.json(users);
 };
