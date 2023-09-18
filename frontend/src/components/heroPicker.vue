@@ -1,9 +1,9 @@
 <template>
-	<div class="relative">
+	<div class="relative ">
 		<span
 			class="
 				block
-				w-32
+				w-40
 				px-4
 				py-2
 				text-sm
@@ -18,6 +18,7 @@
 				focus-visible:ring-opacity-75
 			"
 			v-on:click="toggleMenu"
+			
 		>
 			<span v-if="!value">Select a Hero</span>
 			<span v-else v-text="`Selected: ${value?.name}`"></span>
@@ -49,7 +50,8 @@
 						hover:bg-slate-700
 						gap-2
 					"
-					v-on:click="setOption(option)"
+					v-on:click="setOption(option), toggleMenu()"
+					
 				>
 					<img
 						v-bind:src="option.avatar"
@@ -74,13 +76,55 @@ const props = defineProps({
 
 const emit = defineEmits(['selected']);
 const isOpen = ref(false);
+const selectedItem = ref(0);
 
 function toggleMenu() {
 	isOpen.value = !isOpen.value;
+
+	if (isOpen.value === true){
+	selectedItem.value = 0;
+	setTimeout(function() { //A bit hacky, but makes sure this code executes *after* the menu opens so that it's able to select the first item at that point
+        (document.getElementsByTagName('li')[selectedItem.value].firstChild).focus();
+      }, 0);
+	}
 }
 
 function setOption(input) {
-	props.value = input;
 	emit('selected', input);
 }
+
+
+document.addEventListener('keydown', function(event) {
+		
+
+		if (event.key === " ") {
+			toggleMenu();
+		}
+		
+		if (isOpen.value === true){
+			
+			if(event.key === "ArrowDown"){		
+				console.log(selectedItem.value)
+				if (selectedItem.value >= props.options.length - 1){
+					selectedItem.value = 0;
+				}
+				else {
+					selectedItem.value++;
+				}
+				(document.getElementsByTagName('li')[selectedItem.value].firstChild).focus()
+			}
+			else if(event.key === "ArrowUp"){
+				
+				console.log(selectedItem.value)
+				if (selectedItem.value <= 0){
+					selectedItem.value = 2;
+				}
+				else {
+					
+					selectedItem.value--;
+				}
+				(document.getElementsByTagName('li')[selectedItem.value].firstChild).focus()
+			}
+		}
+	})
 </script>
